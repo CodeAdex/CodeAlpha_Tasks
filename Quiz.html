@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flashcard Quiz App</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+        }
+        
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 30px;
+        }
+        
+        .tabs {
+            display: flex;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            background-color: #f1f1f1;
+            border: none;
+            border-radius: 5px 5px 0 0;
+            margin-right: 5px;
+        }
+        
+        .tab.active {
+            background-color: #3498db;
+            color: white;
+        }
+        
+        .tab-content {
+            display: none;
+            padding: 20px;
+            border-radius: 0 0 5px 5px;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        
+        input, textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        
+        textarea {
+            height: 100px;
+            resize: vertical;
+        }
+        
+        button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+        
+        button:hover {
+            background-color: #2980b9;
+        }
+        
+        .flashcard {
+            background-color: white;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        
+        .flashcard-question {
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        .flashcard-answer {
+            color: #666;
+            margin-top: 10px;
+            display: none;
+        }
+        
+        .flashcard-answer.show {
+            display: block;
+        }
+        
+        .quiz-container {
+            text-align: center;
+        }
+        
+        .quiz-card {
+            background-color: white;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 30px;
+            margin-bottom: 20px;
+            min-height: 200px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        
+        .quiz-question {
+            font-size: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .quiz-answer {
+            font-size: 18px;
+            color: #27ae60;
+            margin-top: 20px;
+            display: none;
+        }
+        
+        .quiz-answer.show {
+            display: block;
+        }
+        
+        .quiz-controls {
+            margin-top: 20px;
+        }
+        
+        .stats {
+            margin-top: 30px;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 5px;
+        }
+        
+        .stats h3 {
+            margin-top: 0;
+        }
+        
+        .flashcard-list {
+            max-height: 400px;
+            overflow-y: auto;
+            margin-bottom: 20px;
+        }
+        
+        .delete-btn {
+            background-color: #e74c3c;
+            margin-left: 10px;
+        }
+        
+        .delete-btn:hover {
+            background-color: #c0392b;
+        }
+        
+        .reveal-btn {
+            background-color: #2ecc71;
+        }
+        
+        .reveal-btn:hover {
+            background-color: #27ae60;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Flashcard Quiz App</h1>
+        
+        <div class="tabs">
+            <button class="tab active" onclick="openTab('add-flashcard')">Add Flashcards</button>
+            <button class="tab" onclick="openTab('view-flashcards')">View Flashcards</button>
+            <button class="tab" onclick="openTab('quiz')">Take Quiz</button>
+            <button class="tab" onclick="openTab('stats')">Statistics</button>
+        </div>
+        
+        <!-- Add Flashcard Tab -->
+        <div id="add-flashcard" class="tab-content active">
+            <h2>Add New Flashcard</h2>
+            <form id="flashcard-form">
+                <div class="form-group">
+                    <label for="question">Question:</label>
+                    <textarea id="question" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="answer">Answer:</label>
+                    <textarea id="answer" required></textarea>
+                </div>
+                <button type="submit">Add Flashcard</button>
+            </form>
+        </div>
+        
+        <!-- View Flashcards Tab -->
+        <div id="view-flashcards" class="tab-content">
+            <h2>Your Flashcards</h2>
+            <div id="flashcard-list" class="flashcard-list">
+                <!-- Flashcards will be added here dynamically -->
+            </div>
+        </div>
+        
+        <!-- Quiz Tab -->
+        <div id="quiz" class="tab-content">
+            <h2>Quiz Yourself</h2>
+            <div class="quiz-container">
+                <div class="quiz-card">
+                    <div class="quiz-question" id="quiz-question">Add some flashcards first to start the quiz!</div>
+                    <div class="quiz-answer" id="quiz-answer"></div>
+                </div>
+                <div class="quiz-controls">
+                    <button id="reveal-btn" class="reveal-btn" disabled>Reveal Answer</button>
+                    <button id="correct-btn" class="correct-btn" disabled>I Got It Right</button>
+                    <button id="wrong-btn" class="wrong-btn" disabled>I Got It Wrong</button>
+                    <button id="next-btn" class="next-btn" disabled>Next Question</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Statistics Tab -->
+        <div id="stats" class="tab-content">
+            <h2>Quiz Statistics</h2>
+            <div class="stats">
+                <h3>Session Results</h3>
+                <p>Total Questions: <span id="total-questions">0</span></p>
+                <p>Correct Answers: <span id="correct-answers">0</span></p>
+                <p>Incorrect Answers: <span id="incorrect-answers">0</span></p>
+                <p>Success Rate: <span id="success-rate">0</span>%</p>
+            </div>
+            <div class="stats">
+                <h3>All-Time Results</h3>
+                <p>Total Questions: <span id="alltime-total">0</span></p>
+                <p>Correct Answers: <span id="alltime-correct">0</span></p>
+                <p>Success Rate: <span id="alltime-rate">0</span>%</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // DOM Elements
+        const flashcardForm = document.getElementById('flashcard-form');
+        const questionInput = document.getElementById('question');
+        const answerInput = document.getElementById('answer');
+        const flashcardList = document.getElementById('flashcard-list');
+        const quizQuestion = document.getElementById('quiz-question');
+        const quizAnswer = document.getElementById('quiz-answer');
+        const revealBtn = document.getElementById('reveal-btn');
+        const correctBtn = document.getElementById('correct-btn');
+        const wrongBtn = document.getElementById('wrong-btn');
+        const nextBtn = document.getElementById('next-btn');
+        
+        // Statistics elements
+        const totalQuestionsEl = document.getElementById('total-questions');
+        const correctAnswersEl = document.getElementById('correct-answers');
+        const incorrectAnswersEl = document.getElementById('incorrect-answers');
+        const successRateEl = document.getElementById('success-rate');
+        const alltimeTotalEl = document.getElementById('alltime-total');
+        const alltimeCorrectEl = document.getElementById('alltime-correct');
+        const alltimeRateEl = document.getElementById('alltime-rate');
+        
+        // App state
+        let flashcards = JSON.parse(localStorage.getItem('flashcards')) || [];
+        let currentQuizIndex = 0;
+        let quizInProgress = false;
+        let answerRevealed = false;
+        
+        // Quiz statistics
+        let sessionStats = {
+            total: 0,
+            correct: 0,
+            incorrect: 0
+        };
+        
+        let allTimeStats = JSON.parse(localStorage.getItem('quizStats')) || {
+            total: 0,
+            correct: 0
+        };
+        
+        // Initialize the app
+        function init() {
+            renderFlashcards();
+            updateStats();
+            
+            // Load all-time stats
+            alltimeTotalEl.textContent = allTimeStats.total;
+            alltimeCorrectEl.textContent = allTimeStats.correct;
+            alltimeRateEl.textContent = allTimeStats.total > 0 
+                ? Math.round((allTimeStats.correct / allTimeStats.total) * 100) 
+                : 0;
+        }
+        
+        // Tab navigation
+        function openTab(tabId) {
+            // Hide all tab contents
+            const tabContents = document.getElementsByClassName('tab-content');
+            for (let i = 0; i < tabContents.length; i++) {
+                tabContents[i].classList.remove('active');
+            }
+            
+            // Remove active class from all tabs
+            const tabs = document.getElementsByClassName('tab');
+            for (let i = 0; i < tabs.length; i++) {
+                tabs[i].classList.remove('active');
+            }
+            
+            // Show the selected tab content and mark tab as active
+            document.getElementById(tabId).classList.add('active');
+            event.currentTarget.classList.add('active');
+            
+            // If opening quiz tab and there are flashcards, start quiz
+            if (tabId === 'quiz' && flashcards.length > 0 && !quizInProgress) {
+                startQuiz();
+            }
+        }
+        
+        // Add new flashcard
+        flashcardForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const question = questionInput.value.trim();
+            const answer = answerInput.value.trim();
+            
+            if (question && answer) {
+                const newFlashcard = {
+                    id: Date.now(),
+                    question,
+                    answer
+                };
+                
+                flashcards.push(newFlashcard);
+                saveFlashcards();
+                renderFlashcards();
+                
+                // Clear form
+                questionInput.value = '';
+                answerInput.value = '';
+            }
+        });
+        
+        // Render all flashcards
+        function renderFlashcards() {
+            flashcardList.innerHTML = '';
+            
+            if (flashcards.length === 0) {
+                flashcardList.innerHTML = '<p>No flashcards yet. Add some using the form above!</p>';
+                return;
+            }
+            
+            flashcards.forEach(flashcard => {
+                const cardElement = document.createElement('div');
+                cardElement.className = 'flashcard';
+                cardElement.innerHTML = `
+                    <div class="flashcard-question">${flashcard.question}</div>
+                    <div class="flashcard-answer">${flashcard.answer}</div>
+                    <button class="reveal-btn" onclick="toggleAnswer(this)">Show Answer</button>
+                    <button class="delete-btn" onclick="deleteFlashcard(${flashcard.id})">Delete</button>
+                `;
+                flashcardList.appendChild(cardElement);
+            });
+        }
+        
+        // Toggle answer visibility
+        window.toggleAnswer = function(button) {
+            const card = button.parentElement;
+            const answer = card.querySelector('.flashcard-answer');
+            answer.classList.toggle('show');
+            button.textContent = answer.classList.contains('show') ? 'Hide Answer' : 'Show Answer';
+        };
+        
+        // Delete flashcard
+        window.deleteFlashcard = function(id) {
+            flashcards = flashcards.filter(card => card.id !== id);
+            saveFlashcards();
+            renderFlashcards();
+        };
+        
+        // Save flashcards to localStorage
+        function saveFlashcards() {
+            localStorage.setItem('flashcards', JSON.stringify(flashcards));
+        }
+        
+        // Quiz functions
+        function startQuiz() {
+            if (flashcards.length === 0) return;
+            
+            currentQuizIndex = 0;
+            quizInProgress = true;
+            answerRevealed = false;
+            
+            // Reset session stats
+            sessionStats = { total: 0, correct: 0, incorrect: 0 };
+            updateStats();
+            
+            // Enable buttons
+            revealBtn.disabled = false;
+            correctBtn.disabled = true;
+            wrongBtn.disabled = true;
+            nextBtn.disabled = true;
+            
+            showQuestion();
+        }
+        
+        function showQuestion() {
+            if (currentQuizIndex >= flashcards.length) {
+                endQuiz();
+                return;
+            }
+            
+            const currentCard = flashcards[currentQuizIndex];
+            quizQuestion.textContent = currentCard.question;
+            quizAnswer.textContent = currentCard.answer;
+            quizAnswer.classList.remove('show');
+            
+            answerRevealed = false;
+            
+            // Update buttons
+            revealBtn.disabled = false;
+            correctBtn.disabled = true;
+            wrongBtn.disabled = true;
+            nextBtn.disabled = true;
+        }
+        
+        function revealAnswer() {
+            quizAnswer.classList.add('show');
+            answerRevealed = true;
+            
+            // Update buttons
+            revealBtn.disabled = true;
+            correctBtn.disabled = false;
+            wrongBtn.disabled = false;
+        }
+        
+        function recordAnswer(correct) {
+            sessionStats.total++;
+            allTimeStats.total++;
+            
+            if (correct) {
+                sessionStats.correct++;
+                allTimeStats.correct++;
+            } else {
+                sessionStats.incorrect++;
+            }
+            
+            updateStats();
+            saveAllTimeStats();
+            
+            // Enable next button
+            nextBtn.disabled = false;
+            correctBtn.disabled = true;
+            wrongBtn.disabled = true;
+        }
+        
+        function nextQuestion() {
+            currentQuizIndex++;
+            showQuestion();
+        }
+        
+        function endQuiz() {
+            quizInProgress = false;
+            quizQuestion.textContent = 'Quiz complete!';
+            quizAnswer.textContent = '';
+            
+            // Disable all buttons
+            revealBtn.disabled = true;
+            correctBtn.disabled = true;
+            wrongBtn.disabled = true;
+            nextBtn.disabled = true;
+        }
+        
+        // Statistics functions
+        function updateStats() {
+            totalQuestionsEl.textContent = sessionStats.total;
+            correctAnswersEl.textContent = sessionStats.correct;
+            incorrectAnswersEl.textContent = sessionStats.incorrect;
+            
+            const successRate = sessionStats.total > 0 
+                ? Math.round((sessionStats.correct / sessionStats.total) * 100) 
+                : 0;
+            successRateEl.textContent = successRate;
+        }
+        
+        function saveAllTimeStats() {
+            localStorage.setItem('quizStats', JSON.stringify(allTimeStats));
+            
+            // Update all-time stats display
+            alltimeTotalEl.textContent = allTimeStats.total;
+            alltimeCorrectEl.textContent = allTimeStats.correct;
+            
+            const allTimeRate = allTimeStats.total > 0 
+                ? Math.round((allTimeStats.correct / allTimeStats.total) * 100) 
+                : 0;
+            alltimeRateEl.textContent = allTimeRate;
+        }
+        
+        // Event listeners for quiz buttons
+        revealBtn.addEventListener('click', revealAnswer);
+        correctBtn.addEventListener('click', () => recordAnswer(true));
+        wrongBtn.addEventListener('click', () => recordAnswer(false));
+        nextBtn.addEventListener('click', nextQuestion);
+        
+        // Initialize the app
+        init();
+    </script>
+</body>
+</html>
