@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inspirational Quote Generator</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f5f5f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            transition: background-color 0.5s;
+        }
+        
+        .container {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            width: 80%;
+            max-width: 600px;
+            text-align: center;
+        }
+        
+        h1 {
+            color: #333;
+            margin-bottom: 30px;
+        }
+        
+        .quote-container {
+            margin: 30px 0;
+            min-height: 150px;
+        }
+        
+        .quote {
+            font-size: 1.5rem;
+            font-weight: 500;
+            line-height: 1.6;
+            color: #333;
+        }
+        
+        .author {
+            font-size: 1.2rem;
+            font-style: italic;
+            margin-top: 20px;
+            color: #666;
+        }
+        
+        .btn {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            font-size: 1rem;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            margin: 10px;
+        }
+        
+        .btn:hover {
+            background-color: #45a049;
+        }
+        
+        .share-buttons {
+            margin-top: 20px;
+        }
+        
+        .share-btn {
+            display: inline-block;
+            padding: 8px 16px;
+            margin: 0 5px;
+            border-radius: 5px;
+            color: white;
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+        
+        .twitter {
+            background-color: #1DA1F2;
+        }
+        
+        .facebook {
+            background-color: #4267B2;
+        }
+        
+        .linkedin {
+            background-color: #0077B5;
+        }
+        
+        .fade-in {
+            animation: fadeIn 1s;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Inspirational Quote Generator</h1>
+        
+        <div class="quote-container">
+            <p id="quote" class="quote">Click the button to generate a quote!</p>
+            <p id="author" class="author"></p>
+        </div>
+        
+        <button id="generate-btn" class="btn">Generate Quote</button>
+        
+        <div class="share-buttons">
+            <a href="#" id="twitter-share" class="share-btn twitter">Share on Twitter</a>
+            <a href="#" id="facebook-share" class="share-btn facebook">Share on Facebook</a>
+            <a href="#" id="linkedin-share" class="share-btn linkedin">Share on LinkedIn</a>
+        </div>
+    </div>
+
+    <script>
+        // Quote database
+        const quotes = [
+            {
+                quote: "The only way to do great work is to love what you do.",
+                author: "Steve Jobs"
+            },
+            {
+                quote: "Life is what happens when you're busy making other plans.",
+                author: "John Lennon"
+            },
+            {
+                quote: "The future belongs to those who believe in the beauty of their dreams.",
+                author: "Eleanor Roosevelt"
+            },
+            {
+                quote: "Success is not final, failure is not fatal: It is the courage to continue that counts.",
+                author: "Winston Churchill"
+            },
+            {
+                quote: "In the middle of every difficulty lies opportunity.",
+                author: "Albert Einstein"
+            },
+            {
+                quote: "Do not watch the clock. Do what it does. Keep going.",
+                author: "Sam Levenson"
+            },
+            {
+                quote: "The only limit to our realization of tomorrow is our doubts of today.",
+                author: "Franklin D. Roosevelt"
+            },
+            {
+                quote: "Believe you can and you're halfway there.",
+                author: "Theodore Roosevelt"
+            },
+            {
+                quote: "It always seems impossible until it's done.",
+                author: "Nelson Mandela"
+            },
+            {
+                quote: "Your time is limited, don't waste it living someone else's life.",
+                author: "Steve Jobs"
+            }
+        ];
+
+        // DOM elements
+        const quoteElement = document.getElementById('quote');
+        const authorElement = document.getElementById('author');
+        const generateBtn = document.getElementById('generate-btn');
+        const twitterShareBtn = document.getElementById('twitter-share');
+        const facebookShareBtn = document.getElementById('facebook-share');
+        const linkedinShareBtn = document.getElementById('linkedin-share');
+
+        // Generate random quote
+        function generateQuote() {
+            const randomIndex = Math.floor(Math.random() * quotes.length);
+            const randomQuote = quotes[randomIndex];
+            
+            // Add fade-in effect
+            quoteElement.classList.remove('fade-in');
+            authorElement.classList.remove('fade-in');
+            void quoteElement.offsetWidth; // Trigger reflow
+            void authorElement.offsetWidth;
+            
+            quoteElement.textContent = randomQuote.quote;
+            authorElement.textContent = `— ${randomQuote.author}`;
+            
+            quoteElement.classList.add('fade-in');
+            authorElement.classList.add('fade-in');
+            
+            // Update share links
+            updateShareLinks(randomQuote.quote, randomQuote.author);
+        }
+
+        // Update social media share links
+        function updateShareLinks(quote, author) {
+            const text = `"${quote}" - ${author}`;
+            const encodedText = encodeURIComponent(text);
+            const url = encodeURIComponent(window.location.href);
+            
+            twitterShareBtn.href = `https://twitter.com/intent/tweet?text=${encodedText}&url=${url}`;
+            facebookShareBtn.href = `https://www.facebook.com/sharer/sharer.php?u=${url}&quote=${encodedText}`;
+            linkedinShareBtn.href = `https://www.linkedin.com/shareArticle?mini=true&url=${url}&title=${encodedText}`;
+        }
+
+        // Event listeners
+        generateBtn.addEventListener('click', generateQuote);
+        
+        // Generate first quote on load
+        generateQuote();
+    </script>
+</body>
+</html>
