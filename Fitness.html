@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fitness Tracker</title>
+    <style>
+        :root {
+            --primary: #4a89dc;
+            --secondary: #3bafda;
+            --success: #8cc152;
+            --danger: #e9573f;
+            --light: #f5f7fa;
+            --dark: #434a54;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f7fa;
+            color: var(--dark);
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            text-align: center;
+            padding: 20px 0;
+            margin-bottom: 30px;
+            border-bottom: 1px solid #e6e9ed;
+        }
+        
+        h1 {
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+        
+        .tabs {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 30px;
+            gap: 10px;
+        }
+        
+        .tab-btn {
+            padding: 10px 20px;
+            background-color: white;
+            border: 1px solid #e6e9ed;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .tab-btn.active {
+            background-color: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+        
+        .tab-content {
+            display: none;
+            background-color: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+        
+        input, select, textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #e6e9ed;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            background-color: var(--primary);
+            color: white;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+        
+        button:hover {
+            background-color: #3a70c4;
+        }
+        
+        .workout-list {
+            margin-top: 20px;
+        }
+        
+        .workout-card {
+            background-color: white;
+            border-radius: 5px;
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        
+        .workout-card h3 {
+            margin-bottom: 10px;
+            color: var(--primary);
+        }
+        
+        .exercise-item {
+            margin-bottom: 10px;
+            padding-bottom: 10px;
+            border-bottom: 1px dashed #e6e9ed;
+        }
+        
+        .progress-chart {
+            width: 100%;
+            height: 300px;
+            background-color: white;
+            border-radius: 5px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .stat-card {
+            background-color: white;
+            border-radius: 5px;
+            padding: 15px;
+            text-align: center;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        
+        .stat-card h3 {
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+        
+        .stat-card p {
+            font-size: 24px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Fitness Tracker</h1>
+            <p>Track your workouts, set goals, and monitor progress</p>
+        </header>
+        
+        <div class="tabs">
+            <button class="tab-btn active" data-tab="log-workout">Log Workout</button>
+            <button class="tab-btn" data-tab="workout-history">Workout History</button>
+            <button class="tab-btn" data-tab="progress">Progress</button>
+            <button class="tab-btn" data-tab="goals">Goals</button>
+        </div>
+        
+        <!-- Log Workout Tab -->
+        <div id="log-workout" class="tab-content active">
+            <h2>Log a New Workout</h2>
+            <form id="workout-form">
+                <div class="form-group">
+                    <label for="workout-date">Date</label>
+                    <input type="date" id="workout-date" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="workout-type">Workout Type</label>
+                    <select id="workout-type" required>
+                        <option value="">Select a workout type</option>
+                        <option value="strength">Strength Training</option>
+                        <option value="cardio">Cardio</option>
+                        <option value="hiit">HIIT</option>
+                        <option value="yoga">Yoga</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="workout-duration">Duration (minutes)</label>
+                    <input type="number" id="workout-duration" min="1" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>Exercises</label>
+                    <div id="exercises-container">
+                        <!-- Exercises will be added here -->
+                    </div>
+                    <button type="button" id="add-exercise-btn">+ Add Exercise</button>
+                </div>
+                
+                <div class="form-group">
+                    <label for="workout-notes">Notes</label>
+                    <textarea id="workout-notes" rows="3"></textarea>
+                </div>
+                
+                <button type="submit">Save Workout</button>
+            </form>
+        </div>
+        
+        <!-- Workout History Tab -->
+        <div id="workout-history" class="tab-content">
+            <h2>Workout History</h2>
+            <div id="workout-list" class="workout-list">
+                <!-- Workouts will be displayed here -->
+            </div>
+        </div>
+        
+        <!-- Progress Tab -->
+        <div id="progress" class="tab-content">
+            <h2>Your Progress</h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <h3>Total Workouts</h3>
+                    <p id="total-workouts">0</p>
+                </div>
+                <div class="stat-card">
+                    <h3>Total Hours</h3>
+                    <p id="total-hours">0</p>
+                </div>
+                <div class="stat-card">
+                    <h3>Calories Burned</h3>
+                    <p id="total-calories">0</p>
+                </div>
+            </div>
+            <div class="progress-chart">
+                <h3>Workout Frequency (Last 30 Days)</h3>
+                <canvas id="progress-chart"></canvas>
+            </div>
+        </div>
+        
+        <!-- Goals Tab -->
+        <div id="goals" class="tab-content">
+            <h2>Set Fitness Goals</h2>
+            <form id="goals-form">
+                <div class="form-group">
+                    <label for="goal-type">Goal Type</label>
+                    <select id="goal-type" required>
+                        <option value="">Select a goal type</option>
+                        <option value="workouts-per-week">Workouts per Week</option>
+                        <option value="weight-loss">Weight Loss</option>
+                        <option value="strength">Strength Target</option>
+                        <option value="endurance">Endurance</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="goal-target">Target</label>
+                    <input type="text" id="goal-target" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="goal-deadline">Deadline</label>
+                    <input type="date" id="goal-deadline" required>
+                </div>
+                
+                <button type="submit">Set Goal</button>
+            </form>
+            
+            <div id="goals-list" class="workout-list" style="margin-top: 30px;">
+                <!-- Goals will be displayed here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Chart.js for progress visualization -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <script>
+        // DOM Elements
+        const tabBtns = document.querySelectorAll('.tab-btn');
+        const tabContents = document.querySelectorAll('.tab-content');
+        const workoutForm = document.getElementById('workout-form');
+        const addExerciseBtn = document.getElementById('add-exercise-btn');
+        const exercisesContainer = document.getElementById('exercises-container');
+        const workoutList = document.getElementById('workout-list');
+        const goalsForm = document.getElementById('goals-form');
+        const goalsList = document.getElementById('goals-list');
+        
+        // Stats elements
+        const totalWorkoutsEl = document.getElementById('total-workouts');
+        const totalHoursEl = document.getElementById('total-hours');
+        const totalCaloriesEl = document.getElementById('total-calories');
+        
+        // App state
+        let workouts = JSON.parse(localStorage.getItem('workouts')) || [];
+        let goals = JSON.parse(localStorage.getItem('fitnessGoals')) || [];
+        
+        // Initialize the app
+        function init() {
+            renderWorkoutHistory();
+            renderGoals();
+            updateStats();
+            setupChart();
+            
+            // Set default date to today
+            document.getElementById('workout-date').valueAsDate = new Date();
+        }
+        
+        // Tab navigation
+        tabBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const tabId = btn.getAttribute('data-tab');
+                
+                // Update active tab button
+                tabBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                
+                // Update active tab content
+                tabContents.forEach(content => content.classList.remove('active'));
+                document.getElementById(tabId).classList.add('active');
+                
+                // Refresh data when certain tabs are opened
+                if (tabId === 'workout-history') {
+                    renderWorkoutHistory();
+                } else if (tabId === 'progress') {
+                    updateStats();
+                    setupChart();
+                } else if (tabId === 'goals') {
+                    renderGoals();
+                }
+            });
+        });
+        
+        // Add exercise field
+        addExerciseBtn.addEventListener('click', () => {
+            const exerciseDiv = document.createElement('div');
+            exerciseDiv.className = 'exercise-item';
+            exerciseDiv.innerHTML = `
+                <div style="display: flex; gap: 10px;">
+                    <input type="text" placeholder="Exercise name" class="exercise-name" required>
+                    <input type="number" placeholder="Sets" class="exercise-sets" min="1">
+                    <input type="number" placeholder="Reps" class="exercise-reps" min="1">
+                    <input type="number" placeholder="Weight (kg)" class="exercise-weight" min="0" step="0.1">
+                    <button type="button" class="remove-exercise-btn" style="background-color: var(--danger);">×</button>
+                </div>
+            `;
+            exercisesContainer.appendChild(exerciseDiv);
+            
+            // Add event listener to remove button
+            exerciseDiv.querySelector('.remove-exercise-btn').addEventListener('click', () => {
+                exerciseDiv.remove();
+            });
+        });
+        
+        // Save workout
+        workoutForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            const date = document.getElementById('workout-date').value;
+            const type = document.getElementById('workout-type').value;
+            const duration = parseInt(document.getElementById('workout-duration').value);
+            const notes = document.getElementById('workout-notes').value;
+            
+            // Collect exercises
+            const exercises = [];
+            const exerciseItems = exercisesContainer.querySelectorAll('.exercise-item');
+            
+            exerciseItems.forEach(item => {
+                exercises.push({
+                    name: item.querySelector('.exercise-name').value,
+                    sets: parseInt(item.querySelector('.exercise-sets').value) || 0,
+                    reps: parseInt(item.querySelector('.exercise-reps').value) || 0,
+                    weight: parseFloat(item.querySelector('.exercise-weight').value) || 0
+                });
+            });
+            
+            if (exercises.length === 0) {
+                alert('Please add at least one exercise');
+                return;
+            }
+            
+            // Create new workout
+            const newWorkout = {
+                id: Date.now(),
+                date,
+                type,
+                duration,
+                exercises,
+                notes,
+                calories: calculateCalories(type, duration)
+            };
+            
+            workouts.push(newWorkout);
+            saveWorkouts();
+            renderWorkoutHistory();
+            updateStats();
+            setupChart();
+            
+            // Reset form
+            workoutForm.reset();
+            exercisesContainer.innerHTML = '';
+            document.getElementById('workout-date').valueAsDate = new Date();
+            
+            alert('Workout saved successfully!');
+        });
+        
+        // Calculate estimated calories
+        function calculateCalories(type, duration) {
+            // Very rough estimates
+            const caloriesPerMinute = {
+                'strength': 5,
+                'cardio': 10,
+                'hiit': 12,
+                'yoga': 3,
+                'other': 5
+            };
+            
+            return Math.round((caloriesPerMinute[type] || 5) * duration);
+        }
+        
+        // Save workouts to localStorage
+        function saveWorkouts() {
+            localStorage.setItem('workouts', JSON.stringify(workouts));
+        }
+        
+        // Render workout history
+        function renderWorkoutHistory() {
+            workoutList.innerHTML = '';
+            
+            if (workouts.length === 0) {
+                workoutList.innerHTML = '<p>No workouts recorded yet. Log your first workout!</p>';
+                return;
+            }
+            
+            // Sort by date (newest first)
+            const sortedWorkouts = [...workouts].sort((a, b) => new Date(b.date) - new Date(a.date));
+            
+            sortedWorkouts.forEach(workout => {
+                const workoutCard = document.createElement('div');
+                workoutCard.className = 'workout-card';
+                
+                let exercisesHtml = '';
+                workout.exercises.forEach(ex => {
+                    exercisesHtml += `
+                        <div class="exercise-item">
+                            <strong>${ex.name}</strong>
+                            ${ex.sets ? ex.sets + ' sets' : ''} 
+                            ${ex.reps ? ex.reps + ' reps' : ''} 
+                            ${ex.weight ? ex.weight + ' kg' : ''}
+                        </div>
+                    `;
+                });
+                
+                workoutCard.innerHTML = `
+                    <h3>${workout.type.charAt(0).toUpperCase() + workout.type.slice(1)} Workout - ${workout.date}</h3>
+                    <p><strong>Duration:</strong> ${workout.duration} minutes</p>
+                    <p><strong>Calories:</strong> ~${workout.calories} kcal</p>
+                    <div style="margin-top: 10px;">
+                        ${exercisesHtml}
+                    </div>
+                    ${workout.notes ? `<p style="margin-top: 10px;"><strong>Notes:</strong> ${workout.notes}</p>` : ''}
+                    <button class="delete-workout-btn" data-id="${workout.id}" style="margin-top: 10px; background-color: var(--danger);">Delete</button>
+                `;
+                
+                workoutList.appendChild(workoutCard);
+            });
+            
+            // Add event listeners to delete buttons
+            document.querySelectorAll('.delete-workout-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const id = parseInt(btn.getAttribute('data-id'));
+                    deleteWorkout(id);
+                });
+            });
+        }
+        
+        // Delete a workout
+        function deleteWorkout(id) {
+            if (confirm('Are you sure you want to delete this workout?')) {
+                workouts = workouts.filter(workout => workout.id !== id);
+                saveWorkouts();
+                renderWorkoutHistory();
+                updateStats();
+                setupChart();
+            }
+        }
+        
+        // Update statistics
+        function updateStats() {
+            totalWorkoutsEl.textContent = workouts.length;
+            
+            const totalMinutes = workouts.reduce((sum, workout) => sum + workout.duration, 0);
+            const totalHours = (totalMinutes / 60).toFixed(1);
+            totalHoursEl.textContent = totalHours;
+            
+            const totalCalories = workouts.reduce((sum, workout) => sum + workout.calories, 0);
+            totalCaloriesEl.textContent = totalCalories;
+        }
+        
+        // Setup progress chart
+        function setupChart() {
+            const ctx = document.getElementById('progress-chart');
+            
+            // Group workouts by date (last 30 days)
+            const thirtyDaysAgo = new Date();
+            thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+            
+            const recentWorkouts = workouts.filter(workout => {
+                return new Date(workout.date) >= thirtyDaysAgo;
+            });
+            
+            // Create a map of dates to workout counts
+            const dateMap = {};
+            const currentDate = new Date(thirtyDaysAgo);
+            
+            // Initialize with 0 counts for all dates
+            while (currentDate <= new Date()) {
+                const dateStr = currentDate.toISOString().split('T')[0];
+                dateMap[dateStr] = 0;
+                currentDate.setDate(currentDate.getDate() + 1);
+            }
+            
+            // Count workouts per day
+            recentWorkouts.forEach(workout => {
+                dateMap[workout.date] = (dateMap[workout.date] || 0) + 1;
+            });
+            
+            // Prepare data for chart
+            const labels = Object.keys(dateMap).sort();
+            const data = labels.map(date => dateMap[date]);
+            
+            // Create or update chart
+            if (window.workoutChart) {
+                window.workoutChart.data.labels = labels;
+                window.workoutChart.data.datasets[0].data = data;
+                window.workoutChart.update();
+            } else {
+                window.workoutChart = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Workouts per Day',
+                            data: data,
+                            backgroundColor: 'rgba(74, 137, 220, 0.7)',
+                            borderColor: 'rgba(74, 137, 220, 1)',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: {
+                                    stepSize: 1
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+        }
+        
+        // Handle goals form
+        goalsForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            const type = document.getElementById('goal-type').value;
+            const target = document.getElementById('goal-target').value;
+            const deadline = document.getElementById('goal-deadline').value;
+            
+            const newGoal = {
+                id: Date.now(),
+                type,
+                target,
+                deadline,
+                createdAt: new Date().toISOString().split('T')[0],
+                completed: false
+            };
+            
+            goals.push(newGoal);
+            saveGoals();
+            renderGoals();
+            
+            // Reset form
+            goalsForm.reset();
+        });
+        
+        // Save goals to localStorage
+        function saveGoals() {
+            localStorage.setItem('fitnessGoals', JSON.stringify(goals));
+        }
+        
+        // Render goals list
+        function renderGoals() {
+            goalsList.innerHTML = '';
+            
+            if (goals.length === 0) {
+                goalsList.innerHTML = '<p>No goals set yet. Create your first fitness goal!</p>';
+                return;
+            }
+            
+            // Sort by deadline (earliest first)
+            const sortedGoals = [...goals].sort((a, b) => new Date(a.deadline) - new Date(b.deadline));
+            
+            sortedGoals.forEach(goal => {
+                const goalCard = document.createElement('div');
+                goalCard.className = 'workout-card';
+                
+                goalCard.innerHTML = `
+                    <h3>${goal.type.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}</h3>
+                    <p><strong>Target:</strong> ${goal.target}</p>
+                    <p><strong>Deadline:</strong> ${goal.deadline}</p>
+                    <p><strong>Status:</strong> ${goal.completed ? '✅ Completed' : '🟡 In Progress'}</p>
+                    <div style="margin-top: 10px;">
+                        <button class="toggle-goal-btn" data-id="${goal.id}" style="background-color: ${goal.completed ? 'var(--secondary)' : 'var(--success)'}">
+                            ${goal.completed ? 'Mark Incomplete' : 'Mark Complete'}
+                        </button>
+                        <button class="delete-goal-btn" data-id="${goal.id}" style="background-color: var(--danger); margin-left: 10px;">
+                            Delete
+                        </button>
+                    </div>
+                `;
+                
+                goalsList.appendChild(goalCard);
+            });
+            
+            // Add event listeners to goal buttons
+            document.querySelectorAll('.toggle-goal-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const id = parseInt(btn.getAttribute('data-id'));
+                    toggleGoalCompletion(id);
+                });
+            });
+            
+            document.querySelectorAll('.delete-goal-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const id = parseInt(btn.getAttribute('data-id'));
+                    deleteGoal(id);
+                });
+            });
+        }
+        
+        // Toggle goal completion
+        function toggleGoalCompletion(id) {
+            goals = goals.map(goal => {
+                if (goal.id === id) {
+                    return { ...goal, completed: !goal.completed };
+                }
+                return goal;
+            });
+            saveGoals();
+            renderGoals();
+        }
+        
+        // Delete a goal
+        function deleteGoal(id) {
+            if (confirm('Are you sure you want to delete this goal?')) {
+                goals = goals.filter(goal => goal.id !== id);
+                saveGoals();
+                renderGoals();
+            }
+        }
+        
+        // Initialize the app
+        init();
+    </script>
+</body>
+</html>
